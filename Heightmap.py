@@ -8,6 +8,7 @@ from random import randint
 
 from Config import mapdimensions, slope, slopediag, directions
 
+
 def update_min_max_map(height_map, water_map, pix, height):
     print("Doing: "+str(pix))
     jobs = []
@@ -33,125 +34,6 @@ def update_min_max_map(height_map, water_map, pix, height):
                 jobs.append((height_map, water_map, (pix[0]+v[0],pix[1]+v[1]), min_height))
     for height_map, water_map, pix, height in jobs:
         update_min_max_map(height_map, water_map, pix, height)
-
-def update_max_map(height_map, water_map, pix, height):
-    height_map[pix[0], pix[1], 1] = height
-    neighbour_height = height
-    if water_map[pix[0], pix[1], 0] != 0: neighbour_height = height + slope
-    test_pix = (pix[0] - 1, pix[1])
-    if test_pix[0] >= 0:
-        if height_map[test_pix[0], test_pix[1], 1] > neighbour_height:
-            update_max_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    if water_map[pix[0], pix[1], 0] != 1: neighbour_height = height + slopediag
-    test_pix = (pix[0] - 1, pix[1] - 1)
-    if test_pix[0] >= 0 and test_pix[1] >= 0:
-        if height_map[test_pix[0], test_pix[1], 1] > neighbour_height:
-            update_max_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    if water_map[pix[0], pix[1], 0] != 2: neighbour_height = height + slope
-    test_pix = (pix[0], pix[1] - 1)
-    if test_pix[1] >= 0:
-        if height_map[test_pix[0], test_pix[1], 1] > neighbour_height:
-            update_max_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    if water_map[pix[0], pix[1], 0] != 3: neighbour_height = height + slopediag
-    test_pix = (pix[0] + 1, pix[1] - 1)
-    if test_pix[0] < mapdimensions[0] and test_pix[1] >= 0:
-        if height_map[test_pix[0], test_pix[1], 1] > neighbour_height:
-            update_max_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    if water_map[pix[0], pix[1], 0] != 4: neighbour_height = height + slope
-    test_pix = (pix[0] + 1, pix[1])
-    if test_pix[0] < mapdimensions[0]:
-        if height_map[test_pix[0], test_pix[1], 1] > neighbour_height:
-            update_max_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    if water_map[pix[0], pix[1], 0] != 5: neighbour_height = height + slopediag
-    test_pix = (pix[0] + 1, pix[1] + 1)
-    if test_pix[0] < mapdimensions[0] and test_pix[1] < mapdimensions[1]:
-        if height_map[test_pix[0], test_pix[1], 1] > neighbour_height:
-            update_max_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    if water_map[pix[0], pix[1], 0] != 6: neighbour_height = height + slope
-    test_pix = (pix[0], pix[1] + 1)
-    if test_pix[1] < mapdimensions[1]:
-        if height_map[test_pix[0], test_pix[1], 1] > neighbour_height:
-            update_max_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    if water_map[pix[0], pix[1], 0] != 7: neighbour_height = height + slopediag
-    test_pix = (pix[0] - 1, pix[1] + 1)
-    if test_pix[0] >= 0 and test_pix[1] < mapdimensions[1]:
-        if height_map[test_pix[0], test_pix[1], 1] > neighbour_height:
-            update_max_map(height_map, water_map, test_pix, neighbour_height)
-
-
-def update_min_map(height_map, water_map, pix, height):
-    height_map[pix[0], pix[1], 0] = height
-    neighbour_height = height
-    test_pix = (pix[0] - 1, pix[1])
-    if test_pix[0] >= 0:
-        #print "Watermap x|y: "+str(test_pix[0])+"|"+str(test_pix[1])
-        #print " :: "+str(watermap[test_pix[0]][test_pix[1]].dir)
-        if water_map[test_pix[0], test_pix[1], 0] != 4: neighbour_height = height - slope
-        if height_map[test_pix[0], test_pix[1], 0] < neighbour_height:
-            update_min_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    test_pix = (pix[0] - 1, pix[1] - 1)
-    if test_pix[0] >= 0 and test_pix[1] >= 0:
-        #print "Watermap x|y: "+str(test_pix[0])+"|"+str(test_pix[1])
-        #print " :: "+str(watermap[test_pix[0]][test_pix[1]].dir)
-        if water_map[test_pix[0], test_pix[1], 0] != 5: neighbour_height = height - slopediag
-        if height_map[test_pix[0], test_pix[1], 0] < neighbour_height:
-            update_min_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    test_pix = (pix[0], pix[1] - 1)
-    if test_pix[1] >= 0:
-        #print "Watermap x|y: "+str(test_pix[0])+"|"+str(test_pix[1])
-        #print " :: "+str(watermap[test_pix[0]][test_pix[1]].dir)
-        if water_map[test_pix[0], test_pix[1], 0] != 6: neighbour_height = height - slope
-        if height_map[test_pix[0], test_pix[1], 0] < neighbour_height:
-            update_min_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    test_pix = (pix[0] + 1, pix[1] - 1)
-    if test_pix[0] < mapdimensions[0] and test_pix[1] >= 0:
-        #print "Watermap x|y: "+str(test_pix[0])+"|"+str(test_pix[1])
-        #print " :: "+str(watermap[test_pix[0]][test_pix[1]].dir)
-        if water_map[test_pix[0], test_pix[1], 0] != 7: neighbour_height = height - slopediag
-        if height_map[test_pix[0], test_pix[1], 0] < neighbour_height:
-            update_min_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    test_pix = (pix[0] + 1, pix[1])
-    if test_pix[0] < mapdimensions[0]:
-        #print "Watermap x|y: "+str(test_pix[0])+"|"+str(test_pix[1])
-        #print " :: "+str(watermap[test_pix[0]][test_pix[1]].dir)
-        if water_map[test_pix[0], test_pix[1], 0] != 0: neighbour_height = height - slope
-        if height_map[test_pix[0], test_pix[1], 0] < neighbour_height:
-            update_min_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    test_pix = (pix[0] + 1, pix[1] + 1)
-    if test_pix[0] < mapdimensions[0] and test_pix[1] < mapdimensions[1]:
-        #print "Watermap x|y: "+str(test_pix[0])+"|"+str(test_pix[1])
-        #print " :: "+str(watermap[test_pix[0]][test_pix[1]].dir)
-        if water_map[test_pix[0], test_pix[1], 0] != 1: neighbour_height = height - slopediag
-        if height_map[test_pix[0], test_pix[1], 0] < neighbour_height:
-            update_min_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    test_pix = (pix[0], pix[1] + 1)
-    if test_pix[1] < mapdimensions[1]:
-        #print "Watermap x|y: "+str(test_pix[0])+"|"+str(test_pix[1])
-        #print " :: "+str(watermap[test_pix[0]][test_pix[1]].dir)
-        if water_map[test_pix[0], test_pix[1], 0] != 2: neighbour_height = height - slope
-        if height_map[test_pix[0], test_pix[1], 0] < neighbour_height:
-            update_min_map(height_map, water_map, test_pix, neighbour_height)
-    neighbour_height = height
-    test_pix = (pix[0] - 1, pix[1] + 1)
-    if test_pix[0] >= 0 and test_pix[1] < mapdimensions[1]:
-        #print "Watermap x|y: "+str(test_pix[0])+"|"+str(test_pix[1])
-        #print " :: "+str(watermap[test_pix[0]][test_pix[1]].dir)
-        if water_map[test_pix[0], test_pix[1], 0] != 3: neighbour_height = height - slopediag
-        if height_map[test_pix[0], test_pix[1], 0] < neighbour_height:
-            update_min_map(height_map, water_map, test_pix, neighbour_height)
 
 
 def create_height_map(water_map, screen):

@@ -1,10 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import numpy as np
 
 mapdimensions = (128,128)
 
 slope = 20
-slopediag = 35
+#slopediag = 35
+slopediag = int(round(slope*np.sqrt(2)))
 
 directions = {0: (-1, 0, True),
               1: (-1, -1, False),

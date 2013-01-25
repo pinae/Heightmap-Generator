@@ -22,13 +22,13 @@ def update_min_max_map(height_map, water_map, pix, min_height, max_height):
             max_height = job_max_height
             if 0 <= pix[0] + v[0] < mapdimensions[0] and 0 <= pix[1] + v[1] < mapdimensions[1]:
                 #print(str((pix[0] + v[0],pix[1] + v[1]))+"   "+str(i))
-                if i != randint(0,7):#water_map[pix[0], pix[1], 0]:
-                    if v[2]:
-                        max_height += slope
-                        min_height -= slope
-                    else:
-                        max_height += slopediag
-                        min_height -= slopediag
+                if i != water_map[pix[0], pix[1], 0]:
+                    if v[2]: max_height += slope
+                    else: max_height += slopediag
+                v_source = directions[water_map[pix[0]+v[0],pix[1]+v[1],0]]
+                if 0 != v[0]+v_source[0] or 0 != v[1]+v_source[1]:
+                    if v[2]: min_height -= slope
+                    else: min_height -= slopediag
                 if height_map[pix[0] + v[0], pix[1] + v[1], 1] > max_height or\
                    height_map[pix[0] + v[0], pix[1] + v[1], 0] < min_height:
                     height_map[pix[0] + v[0], pix[1] + v[1], 1] = min(max_height,

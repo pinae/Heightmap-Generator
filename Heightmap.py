@@ -8,34 +8,44 @@ from random import randint, shuffle
 
 from Config import mapdimensions, slope, slopediag, directions
 
-
-def update_min_max_map(height_map, water_map, pix, min_height, max_height):
-    jobs = [(height_map, water_map, (pix[0],pix[1]), min_height, max_height)]
+def update_min_map(height_map, water_map, pix, min_height):
+    jobs = [(height_map, water_map, (pix[0],pix[1]), min_height)]
     while len(jobs) > 0:
-        height_map, water_map, pix, job_min_height, job_max_height = jobs.pop(0)
+        height_map, water_map, pix, job_min_height = jobs.pop(0)
         a = directions.keys()
         shuffle(a)
         for i in a:
             v = directions[i]
             min_height = job_min_height
-            max_height = job_max_height
             if 0 <= pix[0] + v[0] < mapdimensions[0] and 0 <= pix[1] + v[1] < mapdimensions[1]:
-                #print(str((pix[0] + v[0],pix[1] + v[1]))+"   "+str(i))
-                if i != water_map[pix[0], pix[1], 0]:
-                    if v[2]: max_height += slope
-                    else: max_height += slopediag
                 v_source = directions[water_map[pix[0]+v[0],pix[1]+v[1],0]]
                 if 0 != v[0]+v_source[0] or 0 != v[1]+v_source[1]:
                     if v[2]: min_height -= slope
                     else: min_height -= slopediag
-                if height_map[pix[0] + v[0], pix[1] + v[1], 1] > max_height or\
-                   height_map[pix[0] + v[0], pix[1] + v[1], 0] < min_height:
-                    height_map[pix[0] + v[0], pix[1] + v[1], 1] = min(max_height,
-                        height_map[pix[0] + v[0], pix[1] + v[1], 1])
+                if height_map[pix[0] + v[0], pix[1] + v[1], 0] < min_height:
                     height_map[pix[0] + v[0], pix[1] + v[1], 0] = max(min_height,
                         height_map[pix[0] + v[0], pix[1] + v[1], 0])
-                    jobs.append((height_map, water_map, (pix[0] + v[0], pix[1] + v[1]), min_height, max_height))
-        #print(str(len(jobs))+" Calls to be calculated")
+                    jobs.append((height_map, water_map, (pix[0] + v[0], pix[1] + v[1]), min_height))
+
+
+def update_max_map(height_map, water_map, pix, max_height):
+    jobs = [(height_map, water_map, (pix[0],pix[1]), max_height)]
+    while len(jobs) > 0:
+        height_map, water_map, pix, job_max_height = jobs.pop(0)
+        a = directions.keys()
+        shuffle(a)
+        for i in a:
+            v = directions[i]
+            max_height = job_max_height
+            if 0 <= pix[0] + v[0] < mapdimensions[0] and 0 <= pix[1] + v[1] < mapdimensions[1]:
+                if i != water_map[pix[0], pix[1], 0]:
+                    if v[2]: max_height += slope
+                    else: max_height += slopediag
+                v_source = directions[water_map[pix[0]+v[0],pix[1]+v[1],0]]
+                if height_map[pix[0] + v[0], pix[1] + v[1], 1] > max_height:
+                    height_map[pix[0] + v[0], pix[1] + v[1], 1] = min(max_height,
+                        height_map[pix[0] + v[0], pix[1] + v[1], 1])
+                    jobs.append((height_map, water_map, (pix[0] + v[0], pix[1] + v[1]), max_height))
 
 
 def create_height_map(water_map, screen):
@@ -64,7 +74,8 @@ def create_height_map(water_map, screen):
             #min- und maxmap updaten
             height_map[pix[0], pix[1], 0] = height
             height_map[pix[0], pix[1], 1] = height
-            update_min_max_map(height_map, water_map, pix, height, height)
+            update_min_map(height_map, water_map, pix, height)
+            update_max_map(height_map, water_map, pix, height)
             #Anzeige
             if update == 0:
                 if start_phase > 0:
@@ -85,7 +96,8 @@ def create_height_map(water_map, screen):
             #min- und maxmap updaten
             height_map[x, y, 0] = height
             height_map[x, y, 1] = height
-            update_min_max_map(height_map, water_map, (x, y), height, height)
+            update_min_map(height_map, water_map, (x, y), height)
+            update_max_map(height_map, water_map, (x, y), height)
         pygame.surfarray.blit_array(screen, height_map)
         pygame.display.flip()
         for event in pygame.event.get():

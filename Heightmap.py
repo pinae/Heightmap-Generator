@@ -10,7 +10,6 @@ from Config import mapdimensions, slope, slopediag, directions
 
 
 def update_min_max_map(height_map, water_map, pix, min_height, max_height):
-    print("Doing: "+str(pix))
     jobs = [(height_map, water_map, (pix[0],pix[1]), min_height, max_height)]
     while len(jobs) > 0:
         height_map, water_map, pix, job_min_height, job_max_height = jobs.pop(0)

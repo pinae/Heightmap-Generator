@@ -5,7 +5,6 @@ import numpy as np
 mapdimensions = (128,128)
 
 slope = 20
-#slopediag = 35
 slopediag = int(round(slope*np.sqrt(2)))
 
 directions = {0: (-1, 0, True),

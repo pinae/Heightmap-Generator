@@ -218,5 +218,5 @@ def create_water_map(screen):
             show_counter += 1
     for x in water_map:
         for y in x:
-            if y[0] == 255: y[0] = 180
+            if y[0] == 255: y[0] = randint(0,7)*30#180
     return water_map

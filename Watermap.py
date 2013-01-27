@@ -15,24 +15,24 @@ def get_dir(start, end):
             return 5
         else:
             if start[1] > end[1]:
-                return 7
+                return 3
             else:
-                return 6
+                return 4
     else:
         if start[0] > end[0]:
             if start[1] < end[1]:
-                return 3
+                return 7
             else:
                 if start[1] > end[1]:
                     return 1
                 else:
-                    return 2
+                    return 0
         else:
             if start[1] < end[1]:
-                return 0
+                return 6
             else:
                 if start[1] > end[1]:
-                    return 4
+                    return 2
                 else:
                     print("Keine Richtung definierbar! Start und End sind gleich!")
                     return 0
@@ -56,6 +56,7 @@ def create_river(water_map, start, end):
             water_map[start[0], start[1], 0] = get_dir(start, end) * 30
             return True
         else:
+            #print("Direction already decided!")
             return False
 
 
@@ -73,7 +74,7 @@ def get_min_flow_point(point, flow_points):
     return min_point
 
 
-def get_near_flow_point(point, flow_points, water_map):
+def get_near_sink(point, flow_points, water_map):
     min_point = get_min_flow_point(point, flow_points)
     dist = np.sqrt(
         (min_point[0] - point[0]) * (min_point[0] - point[0]) + (min_point[1] - point[1]) * (min_point[1] - point[1]))
@@ -206,7 +207,7 @@ def create_water_map(screen):
         if water_map[point[0],point[1],0] < 255:
             fail_counter += 1
         else:
-            end_point = get_near_flow_point(point, flow_points, water_map)
+            end_point = get_near_sink(point, flow_points, water_map)
             if len(flow_points) < 1000: flow_points.append(end_point)
             create_river(water_map, point, end_point)
             fail_counter = 0

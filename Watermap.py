@@ -42,10 +42,10 @@ def create_river(water_map, start, end):
     if abs(start[0] - end[0]) > 1 or abs(start[1] - end[1]) > 1:
         dist = np.sqrt((start[0] - end[0]) * (start[0] - end[0]) + (start[1] - end[1]) * (start[1] - end[1]))
         #print("Dist ist " + str(dist))
-        middle = [start[0] / 2.0 + end[0] / 2.0, start[1] / 2.0 + end[1] / 2.0]
+        middle = (start[0] / 2.0 + end[0] / 2.0, start[1] / 2.0 + end[1] / 2.0)
         rand_num = (random() - 0.5) / 2
-        middle = (max(0,min(mapdimensions[0]-1,int(round(middle[0] + (end[1] - start[1]) * rand_num)))),
-                  max(0,min(mapdimensions[1]-1,int(round(middle[1] - (end[0] - start[0]) * rand_num)))))
+        middle = (max(0, min(mapdimensions[0]-1, int(round(middle[0] + (end[1] - start[1]) * rand_num)))),
+                  max(0, min(mapdimensions[1]-1, int(round(middle[1] - (end[0] - start[0]) * rand_num)))))
         if create_river(water_map, start, middle):
             return create_river(water_map, middle, end)
         else:
@@ -336,12 +336,17 @@ def get_near_sink(point, flow_points, water_map):
     return min_point
 
 
-def create_water_map(screen):
+def initialize_water_map():
     water_map = np.zeros(mapdimensions+(3,), dtype=np.uint8)
     for x in water_map:
         for y in x:
             y[0] = 255
-            y[2] = 0#randint(0, 7) * 30
+            y[2] = 0  # randint(0, 7) * 30
+    return water_map
+
+
+def create_water_map(screen):
+    water_map = initialize_water_map()
     flow_points = [(0, 50)]
     fail_counter = 0
     show_counter = 1

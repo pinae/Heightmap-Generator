@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-mapdimensions = (128,128)
+mapdimensions = (128, 128)
 
 slope = 20
 slopediag = int(round(slope*np.sqrt(2)))

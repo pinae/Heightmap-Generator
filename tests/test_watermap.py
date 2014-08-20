@@ -1,10 +1,33 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from unittest import TestCase
-from Watermap import get_dir, get_min_flow_point
+from mock import patch
+from Watermap import initialize_water_map, get_dir, get_min_flow_point, create_river
+
+
+def return1():
+    return 1.0
+
+
+def return0():
+    return 0.0
+
+
+def return_half():
+    return 0.5
 
 
 class WaterMapUtilityTest(TestCase):
+    @patch('Watermap.mapdimensions', (2, 2))
+    def test_initialize_water_map(self):
+        water_map = initialize_water_map()
+        self.assertEqual(len(water_map), 2)
+        self.assertEqual(len(water_map[0]), 2)
+        for line in water_map:
+            for cell in line:
+                self.assertEqual(cell[0], 255)
+                self.assertEqual(cell[2], 0)
+
     def test_get_dir(self):
         self.assertEqual(get_dir((2, 2), (1, 2)), 0)
         self.assertEqual(get_dir((2, 2), (1, 1)), 1)
@@ -24,3 +47,58 @@ class WaterMapUtilityTest(TestCase):
 
     def test_get_near_sink(self):
         pass
+
+    @patch('Watermap.mapdimensions', (2, 2))
+    def test_create_river_neighbouring_points(self):
+        water_map = initialize_water_map()
+        self.assertTrue(create_river(water_map, (0, 0), (1, 1)))
+        self.assertEqual(water_map[0, 0, 0], 5 * 30)
+        self.assertEqual(water_map[0, 1, 0], 255)
+        self.assertEqual(water_map[1, 0, 0], 255)
+        self.assertEqual(water_map[1, 1, 0], 255)
+        self.assertFalse(create_river(water_map, (0, 0), (1, 1)))
+
+    @patch('Watermap.mapdimensions', (3, 3))
+    @patch('Watermap.random', return1)
+    def test_create_river(self):
+        water_map = initialize_water_map()
+        self.assertTrue(create_river(water_map, (0, 0), (2, 2)))
+        self.assertEqual(water_map[0, 0, 0], 4 * 30)
+        self.assertEqual(water_map[1, 0, 0], 5 * 30)
+        self.assertEqual(water_map[2, 1, 0], 6 * 30)
+        self.assertEqual(water_map[2, 0, 0], 255)
+        self.assertEqual(water_map[2, 2, 0], 255)
+        self.assertEqual(water_map[1, 1, 0], 255)
+        self.assertEqual(water_map[1, 2, 0], 255)
+        self.assertEqual(water_map[0, 1, 0], 255)
+        self.assertEqual(water_map[0, 2, 0], 255)
+
+    @patch('Watermap.mapdimensions', (3, 3))
+    @patch('Watermap.random', return0)
+    def test_create_river(self):
+        water_map = initialize_water_map()
+        self.assertTrue(create_river(water_map, (0, 0), (2, 2)))
+        self.assertEqual(water_map[0, 0, 0], 6 * 30)
+        self.assertEqual(water_map[0, 1, 0], 5 * 30)
+        self.assertEqual(water_map[1, 2, 0], 4 * 30)
+        self.assertEqual(water_map[2, 0, 0], 255)
+        self.assertEqual(water_map[2, 2, 0], 255)
+        self.assertEqual(water_map[1, 1, 0], 255)
+        self.assertEqual(water_map[2, 1, 0], 255)
+        self.assertEqual(water_map[1, 0, 0], 255)
+        self.assertEqual(water_map[0, 2, 0], 255)
+
+    @patch('Watermap.mapdimensions', (3, 3))
+    @patch('Watermap.random', return_half)
+    def test_create_river(self):
+        water_map = initialize_water_map()
+        self.assertTrue(create_river(water_map, (0, 0), (2, 2)))
+        self.assertEqual(water_map[0, 0, 0], 5 * 30)
+        self.assertEqual(water_map[1, 1, 0], 5 * 30)
+        self.assertEqual(water_map[2, 1, 0], 255)
+        self.assertEqual(water_map[2, 0, 0], 255)
+        self.assertEqual(water_map[2, 2, 0], 255)
+        self.assertEqual(water_map[1, 0, 0], 255)
+        self.assertEqual(water_map[1, 2, 0], 255)
+        self.assertEqual(water_map[0, 1, 0], 255)
+        self.assertEqual(water_map[0, 2, 0], 255)

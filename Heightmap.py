@@ -5,6 +5,7 @@ import pygame
 import sys
 import numpy as np
 from random import randint, shuffle
+from multiprocessing import Process
 
 from Config import mapdimensions, slope, slopediag, directions
 
@@ -69,13 +70,21 @@ def create_height_map(water_map, screen):
             #print("New Pixel ____________________________________________")
             #raw_input("Press Enter to continue...")
             #print("Fails auf 0 gesetzt")
-            height = randint(height_map[pix[0], pix[1], 0], height_map[pix[0], pix[1], 1])
+            min_value = height_map[pix[0], pix[1], 0]
+            max_value = height_map[pix[0], pix[1], 1]
+            height = randint(min_value, max_value)
             height_map[pix[0], pix[1], 2] = height
             #min- und maxmap updaten
             height_map[pix[0], pix[1], 0] = height
             height_map[pix[0], pix[1], 1] = height
-            update_min_map(height_map, water_map, pix, height)
-            update_max_map(height_map, water_map, pix, height)
+            if max_value-min_value > 10:
+                minProcess = Process(target=update_min_map, args=(height_map, water_map, pix, height))
+                minProcess.start()
+                update_max_map(height_map, water_map, pix, height)
+                minProcess.join()
+            else:
+                update_min_map(height_map, water_map, pix, height)
+                update_max_map(height_map, water_map, pix, height)
             #Anzeige
             if update == 0:
                 if start_phase > 0:

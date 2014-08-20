@@ -4,7 +4,7 @@
 import sys
 import pygame
 import numpy as np
-from random import randint, random, shuffle
+from random import random, shuffle
 
 from Config import mapdimensions
 
@@ -116,31 +116,18 @@ def create_water_map(screen, flow_point_tuples):
     for flow_point_tuple in flow_point_tuples:
         flow_points.append(flow_point_tuple[0])
         water_map[flow_point_tuple[0][0], flow_point_tuple[0][1], 0] = flow_point_tuple[1]
-    fail_counter = 0
-    show_counter = 1
-    while fail_counter < 13:
-        #select a random point
-        point = (randint(0, mapdimensions[0] - 1), randint(0, mapdimensions[1] - 1))
-        #test
-        if water_map[point[0], point[1], 0] < 255:
-            fail_counter += 1
-        else:
-            end_point = get_near_sink(point, flow_points, water_map)
-            if len(flow_points) < 1000:
-                flow_points.append(end_point)
-            create_river(water_map, point, end_point)
-            fail_counter = 0
-        if fail_counter == show_counter and screen:
+    all_points = []
+    for x in range(mapdimensions[0]):
+        for y in range(mapdimensions[1]):
+            all_points.append((x, y))
+    shuffle(all_points)
+    for point in all_points:
+        end_point = get_near_sink(point, flow_points, water_map)
+        create_river(water_map, point, end_point)
+        if point[0] == 0 and screen:
             pygame.surfarray.blit_array(screen, water_map)
             pygame.display.flip()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
-            show_counter += 1
-    for x in range(len(water_map)):
-        for y in range(len(water_map[0])):
-            if water_map[x, y, 0] == 255:
-                point = (x, y)
-                end_point = get_near_sink(point, flow_points, water_map)
-                create_river(water_map, point, end_point)
     return water_map

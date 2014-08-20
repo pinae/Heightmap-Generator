@@ -3,7 +3,6 @@
 from unittest import TestCase
 from mock import patch
 from Watermap import initialize_water_map, get_dir, get_min_flow_point, get_near_sink, create_river, create_water_map
-import numpy as np
 
 
 def return1():
@@ -122,12 +121,12 @@ class WaterMapUtilityTest(TestCase):
         expected = [[[180, 0, 0],
                      [0, 0, 0],
                      [60, 0, 0]],
-                    [[180, 0, 0],
-                     [0, 0, 0],
-                     [60, 0, 0]],
                     [[0, 0, 0],
                      [0, 0, 0],
-                     [30, 0, 0]]]
+                     [0, 0, 0]],
+                    [[0, 0, 0],
+                     [0, 0, 0],
+                     [0, 0, 0]]]
         for x in range(len(water_map)):
             for y in range(len(water_map[0])):
                 for v in range(len(water_map[0][0])):

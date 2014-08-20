@@ -17,7 +17,8 @@ def main():
     screen = pygame.display.set_mode(mapdimensions)
     pygame.display.set_caption("Height Map Generator")
     # create the water_map and display it
-    water_map = create_water_map(screen)
+    flow_points = [((0, 50), 0)]
+    water_map = create_water_map(screen, flow_points)
     #water_map = np.array([np.array([np.array([255, 0, 0]) for y in range(mapdimensions[1])]) for x in range(mapdimensions[0])])
     pygame.surfarray.blit_array(screen, water_map)
     pygame.display.flip()

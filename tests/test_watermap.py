@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 from unittest import TestCase
 from mock import patch
-from Watermap import initialize_water_map, get_dir, get_min_flow_point, get_near_sink, create_river
+from Watermap import initialize_water_map, get_dir, get_min_flow_point, get_near_sink, create_river, create_water_map
+import numpy as np
 
 
 def return1():
@@ -15,6 +16,10 @@ def return0():
 
 def return_half():
     return 0.5
+
+
+def return_the_same(x):
+    return x
 
 
 class WaterMapUtilityTest(TestCase):
@@ -108,3 +113,22 @@ class WaterMapUtilityTest(TestCase):
         self.assertEqual(water_map[1, 2, 0], 255)
         self.assertEqual(water_map[0, 1, 0], 255)
         self.assertEqual(water_map[0, 2, 0], 255)
+
+    @patch('Watermap.mapdimensions', (3, 3))
+    @patch('Watermap.random', return_half)
+    @patch('Watermap.shuffle', return_the_same)
+    def test_create_water_map(self):
+        water_map = create_water_map(None, [((0, 1), 0)])
+        expected = [[[180, 0, 0],
+                     [0, 0, 0],
+                     [60, 0, 0]],
+                    [[180, 0, 0],
+                     [0, 0, 0],
+                     [60, 0, 0]],
+                    [[0, 0, 0],
+                     [0, 0, 0],
+                     [30, 0, 0]]]
+        for x in range(len(water_map)):
+            for y in range(len(water_map[0])):
+                for v in range(len(water_map[0][0])):
+                    self.assertEqual(water_map[x][y][v], expected[x][y][v])

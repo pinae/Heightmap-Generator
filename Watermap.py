@@ -4,7 +4,7 @@
 import sys
 import pygame
 import numpy as np
-from random import randint, random
+from random import randint, random, shuffle
 
 from Config import mapdimensions
 
@@ -82,256 +82,21 @@ def get_near_sink(point, flow_points, water_map):
     # search for flowpoints in the middle of rivers which are nearer
     step = 1
     while step < min(dist, 50):
-        if randint(0, 1):
-            if randint(0, 1):
-                if randint(0, 1):
-                    if point[0] + step < mapdimensions[0] and water_map[point[0] + step, point[1], 0] < 255:
-                        return point[0] + step, point[1]
-                    if point[1] + step < mapdimensions[1] and water_map[point[0], point[1] + step, 0] < 255:
-                        return point[0], point[1] + step
-                else:
-                    if point[1] + step < mapdimensions[1] and water_map[point[0], point[1] + step, 0] < 255:
-                        return point[0], point[1] + step
-                    if point[0] + step < mapdimensions[0] and water_map[point[0] + step, point[1], 0] < 255:
-                        return point[0] + step, point[1]
-                if randint(0, 1):
-                    if point[0] - step >= 0 and water_map[point[0] - step, point[1], 0] < 255:
-                        return point[0] - step, point[1]
-                    if point[1] - step >= 0 and water_map[point[0], point[1] - step, 0] < 255:
-                        return point[0], point[1] - step
-                else:
-                    if point[1] - step >= 0 and water_map[point[0], point[1] - step, 0] < 255:
-                        return point[0], point[1] - step
-                    if point[0] - step >= 0 and water_map[point[0] - step, point[1], 0] < 255:
-                        return point[0] - step, point[1]
-            else:
-                if randint(0, 1):
-                    if point[0] - step >= 0 and water_map[point[0] - step, point[1], 0] < 255:
-                        return point[0] - step, point[1]
-                    if point[1] - step >= 0 and water_map[point[0], point[1] - step, 0] < 255:
-                        return point[0], point[1] - step
-                else:
-                    if point[1] - step >= 0 and water_map[point[0], point[1] - step, 0] < 255:
-                        return point[0], point[1] - step
-                    if point[0] - step >= 0 and water_map[point[0] - step, point[1], 0] < 255:
-                        return point[0] - step, point[1]
-                if randint(0, 1):
-                    if point[0] + step < mapdimensions[0] and water_map[point[0] + step, point[1], 0] < 255:
-                        return point[0] + step, point[1]
-                    if point[1] + step < mapdimensions[1] and water_map[point[0], point[1] + step, 0] < 255:
-                        return point[0], point[1] + step
-                else:
-                    if point[1] + step < mapdimensions[1] and water_map[point[0], point[1] + step, 0] < 255:
-                        return point[0], point[1] + step
-                    if point[0] + step < mapdimensions[0] and water_map[point[0] + step, point[1], 0] < 255:
-                        return point[0] + step, point[1]
-            if randint(0, 1):
-                if randint(0, 1):
-                    if point[0] - step >= 0 and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] - step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] - step * 180 / 255
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] + step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] + step * 180 / 255
-                else:
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] + step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] + step * 180 / 255
-                    if point[0] - step >= 0 and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] - step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] - step * 180 / 255
-                if randint(0, 1):
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] + step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] - step * 180 / 255
-                    if point[0] - step >= 0 and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] - step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] + step * 180 / 255
-                else:
-                    if point[0] - step >= 0 and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] - step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] + step * 180 / 255
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] + step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] - step * 180 / 255
-            else:
-                if randint(0, 1):
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] + step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] - step * 180 / 255
-                    if point[0] - step >= 0 and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] - step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] + step * 180 / 255
-                else:
-                    if point[0] - step >= 0 and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] - step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] + step * 180 / 255
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] + step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] - step * 180 / 255
-                if randint(0, 1):
-                    if point[0] - step >= 0 and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] - step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] - step * 180 / 255
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] + step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] + step * 180 / 255
-                else:
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] + step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] + step * 180 / 255
-                    if point[0] - step >= 0 and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] - step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] - step * 180 / 255
-        else:
-            if randint(0, 1):
-                if randint(0, 1):
-                    if point[0] - step >= 0 and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] - step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] - step * 180 / 255
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] + step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] + step * 180 / 255
-                else:
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] + step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] + step * 180 / 255
-                    if point[0] - step >= 0 and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] - step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] - step * 180 / 255
-                if randint(0, 1):
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] + step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] - step * 180 / 255
-                    if point[0] - step >= 0 and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] - step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] + step * 180 / 255
-                else:
-                    if point[0] - step >= 0 and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] - step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] + step * 180 / 255
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] + step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] - step * 180 / 255
-            else:
-                if randint(0, 1):
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] + step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] - step * 180 / 255
-                    if point[0] - step >= 0 and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] - step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] + step * 180 / 255
-                else:
-                    if point[0] - step >= 0 and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] - step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] + step * 180 / 255
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] + step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] - step * 180 / 255
-                if randint(0, 1):
-                    if point[0] - step >= 0 and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] - step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] - step * 180 / 255
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] + step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] + step * 180 / 255
-                else:
-                    if point[0] + step < mapdimensions[0] and \
-                       point[1] + step < mapdimensions[1] and \
-                       water_map[point[0] + step * 180 / 255, point[1] + step * 180 / 255, 0] < 255:
-                        return point[0] + step * 180 / 255, point[1] + step * 180 / 255
-                    if point[0] - step >= 0 and \
-                       point[1] - step >= 0 and \
-                       water_map[point[0] - step * 180 / 255, point[1] - step * 180 / 255, 0] < 255:
-                        return point[0] - step * 180 / 255, point[1] - step * 180 / 255
-            if randint(0, 1):
-                if randint(0, 1):
-                    if point[0] + step < mapdimensions[0] and \
-                       water_map[point[0] + step, point[1], 0] < 255:
-                        return point[0] + step, point[1]
-                    if point[1] + step < mapdimensions[1] and \
-                       water_map[point[0], point[1] + step, 0] < 255:
-                        return point[0], point[1] + step
-                else:
-                    if point[1] + step < mapdimensions[1] and \
-                       water_map[point[0], point[1] + step, 0] < 255:
-                        return point[0], point[1] + step
-                    if point[0] + step < mapdimensions[0] and \
-                       water_map[point[0] + step, point[1], 0] < 255:
-                        return point[0] + step, point[1]
-                if randint(0, 1):
-                    if point[0] - step >= 0 and \
-                       water_map[point[0] - step, point[1], 0] < 255:
-                        return point[0] - step, point[1]
-                    if point[1] - step >= 0 and \
-                       water_map[point[0], point[1] - step, 0] < 255:
-                        return point[0], point[1] - step
-                else:
-                    if point[1] - step >= 0 and \
-                       water_map[point[0], point[1] - step, 0] < 255:
-                        return point[0], point[1] - step
-                    if point[0] - step >= 0 and \
-                       water_map[point[0] - step, point[1], 0] < 255:
-                        return point[0] - step, point[1]
-            else:
-                if randint(0, 1):
-                    if point[0] - step >= 0 and \
-                       water_map[point[0] - step, point[1], 0] < 255:
-                        return point[0] - step, point[1]
-                    if point[1] - step >= 0 and \
-                       water_map[point[0], point[1] - step, 0] < 255:
-                        return point[0], point[1] - step
-                else:
-                    if point[1] - step >= 0 and \
-                       water_map[point[0], point[1] - step, 0] < 255:
-                        return point[0], point[1] - step
-                    if point[0] - step >= 0 and \
-                       water_map[point[0] - step, point[1], 0] < 255:
-                        return point[0] - step, point[1]
-                if randint(0, 1):
-                    if point[0] + step < mapdimensions[0] and \
-                       water_map[point[0] + step, point[1], 0] < 255:
-                        return point[0] + step, point[1]
-                    if point[1] + step < mapdimensions[1] and \
-                       water_map[point[0], point[1] + step, 0] < 255:
-                        return point[0], point[1] + step
-                else:
-                    if point[1] + step < mapdimensions[1] and \
-                       water_map[point[0], point[1] + step, 0] < 255:
-                        return point[0], point[1] + step
-                    if point[0] + step < mapdimensions[0] and \
-                       water_map[point[0] + step, point[1], 0] < 255:
-                        return point[0] + step, point[1]
+        possible_positions = [
+            (point[0] + step, point[1]),
+            (point[0], point[1] + step),
+            (point[0] - step, point[1]),
+            (point[0], point[1] - step),
+            (point[0] + step * 180 / 255, point[1] + step * 180 / 255),
+            (point[0] + step * 180 / 255, point[1] - step * 180 / 255),
+            (point[0] - step * 180 / 255, point[1] + step * 180 / 255),
+            (point[0] - step * 180 / 255, point[1] - step * 180 / 255)
+        ]
+        shuffle(possible_positions)
+        for sink_candidate in possible_positions:
+            if 0 <= sink_candidate[0] < mapdimensions[0] and 0 <= sink_candidate[1] < mapdimensions[1] and \
+               water_map[sink_candidate[0], sink_candidate[1], 0] < 255:
+                return sink_candidate
         step += 1
     return min_point
 

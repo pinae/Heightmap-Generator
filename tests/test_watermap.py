@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from unittest import TestCase
 from mock import patch
-from Watermap import initialize_water_map, get_dir, get_min_flow_point, create_river
+from Watermap import initialize_water_map, get_dir, get_min_flow_point, get_near_sink, create_river
 
 
 def return1():
@@ -45,8 +45,14 @@ class WaterMapUtilityTest(TestCase):
         self.assertEqual(get_min_flow_point((0, 1), flow_points), ((0, 0), 1))
         self.assertEqual(get_min_flow_point((2, 0), flow_points), ((2, 0), 0))
 
+    @patch('Watermap.mapdimensions', (6, 6))
     def test_get_near_sink(self):
-        pass
+        water_map = initialize_water_map()
+        for cell in water_map[0]:
+            cell[0] = 0
+        for cell in water_map[5]:
+            cell[0] = 0
+        self.assertEqual(get_near_sink((3, 2), [(0, 0), (6, 0)], water_map), (5, 2))
 
     @patch('Watermap.mapdimensions', (2, 2))
     def test_create_river_neighbouring_points(self):

@@ -4,8 +4,12 @@
 import pygame
 import sys
 import numpy as np
-from random import randint, shuffle
+from random import randint, shuffle, random
 from Config import mapdimensions, slope, slopediag, directions
+
+
+def get_min_height(job):
+    return job[3]
 
 
 def update_min_map(height_map, water_map, pix, min_height):
@@ -13,7 +17,6 @@ def update_min_map(height_map, water_map, pix, min_height):
     while len(jobs) > 0:
         height_map, water_map, pix, job_min_height = jobs.pop(0)
         a = directions.keys()
-        shuffle(a)
         for i in a:
             v = directions[i]
             min_height = job_min_height
@@ -30,6 +33,7 @@ def update_min_map(height_map, water_map, pix, min_height):
                         height_map[pix[0] + v[0], pix[1] + v[1], 0]
                     )
                     jobs.append((height_map, water_map, (pix[0] + v[0], pix[1] + v[1]), min_height))
+        jobs.sort(key=get_min_height)
 
 
 def update_max_map(height_map, water_map, pix, max_height):
@@ -37,7 +41,6 @@ def update_max_map(height_map, water_map, pix, max_height):
     while len(jobs) > 0:
         height_map, water_map, pix, job_max_height = jobs.pop(0)
         a = directions.keys()
-        shuffle(a)
         for i in a:
             v = directions[i]
             max_height = job_max_height
@@ -47,12 +50,12 @@ def update_max_map(height_map, water_map, pix, max_height):
                         max_height += slope
                     else:
                         max_height += slopediag
-                v_source = directions[water_map[pix[0]+v[0], pix[1]+v[1], 0]]
                 if height_map[pix[0] + v[0], pix[1] + v[1], 1] > max_height:
                     height_map[pix[0] + v[0], pix[1] + v[1], 1] = min(
                         max_height,
                         height_map[pix[0] + v[0], pix[1] + v[1], 1])
                     jobs.append((height_map, water_map, (pix[0] + v[0], pix[1] + v[1]), max_height))
+        jobs.sort(key=get_min_height, reverse=True)
 
 
 def create_height_map(water_map, screen):
@@ -78,7 +81,11 @@ def create_height_map(water_map, screen):
             #print("Fails auf 0 gesetzt")
             min_value = height_map[pix[0], pix[1], 0]
             max_value = height_map[pix[0], pix[1], 1]
-            height = randint(min_value, max_value)
+            #height = randint(min_value, max_value)
+            rnd = random()
+            height = min_value + int(round(
+                (5 * rnd * rnd * rnd * rnd + rnd * rnd * rnd + rnd * rnd + 5 * rnd) / 12.0 * (max_value - min_value)
+            ))
             height_map[pix[0], pix[1], 2] = height
             #min- und maxmap updaten
             height_map[pix[0], pix[1], 0] = height

@@ -5,12 +5,11 @@ import pygame
 import sys
 import numpy as np
 from random import randint, shuffle
-from multiprocessing import Process
-
 from Config import mapdimensions, slope, slopediag, directions
 
+
 def update_min_map(height_map, water_map, pix, min_height):
-    jobs = [(height_map, water_map, (pix[0],pix[1]), min_height)]
+    jobs = [(height_map, water_map, (pix[0], pix[1]), min_height)]
     while len(jobs) > 0:
         height_map, water_map, pix, job_min_height = jobs.pop(0)
         a = directions.keys()
@@ -19,18 +18,22 @@ def update_min_map(height_map, water_map, pix, min_height):
             v = directions[i]
             min_height = job_min_height
             if 0 <= pix[0] + v[0] < mapdimensions[0] and 0 <= pix[1] + v[1] < mapdimensions[1]:
-                v_source = directions[water_map[pix[0]+v[0],pix[1]+v[1],0]]
+                v_source = directions[water_map[pix[0]+v[0], pix[1]+v[1], 0]]
                 if 0 != v[0]+v_source[0] or 0 != v[1]+v_source[1]:
-                    if v[2]: min_height -= slope
-                    else: min_height -= slopediag
+                    if v[2]:
+                        min_height -= slope
+                    else:
+                        min_height -= slopediag
                 if height_map[pix[0] + v[0], pix[1] + v[1], 0] < min_height:
-                    height_map[pix[0] + v[0], pix[1] + v[1], 0] = max(min_height,
-                        height_map[pix[0] + v[0], pix[1] + v[1], 0])
+                    height_map[pix[0] + v[0], pix[1] + v[1], 0] = max(
+                        min_height,
+                        height_map[pix[0] + v[0], pix[1] + v[1], 0]
+                    )
                     jobs.append((height_map, water_map, (pix[0] + v[0], pix[1] + v[1]), min_height))
 
 
 def update_max_map(height_map, water_map, pix, max_height):
-    jobs = [(height_map, water_map, (pix[0],pix[1]), max_height)]
+    jobs = [(height_map, water_map, (pix[0], pix[1]), max_height)]
     while len(jobs) > 0:
         height_map, water_map, pix, job_max_height = jobs.pop(0)
         a = directions.keys()
@@ -40,17 +43,20 @@ def update_max_map(height_map, water_map, pix, max_height):
             max_height = job_max_height
             if 0 <= pix[0] + v[0] < mapdimensions[0] and 0 <= pix[1] + v[1] < mapdimensions[1]:
                 if i != water_map[pix[0], pix[1], 0]:
-                    if v[2]: max_height += slope
-                    else: max_height += slopediag
-                v_source = directions[water_map[pix[0]+v[0],pix[1]+v[1],0]]
+                    if v[2]:
+                        max_height += slope
+                    else:
+                        max_height += slopediag
+                v_source = directions[water_map[pix[0]+v[0], pix[1]+v[1], 0]]
                 if height_map[pix[0] + v[0], pix[1] + v[1], 1] > max_height:
-                    height_map[pix[0] + v[0], pix[1] + v[1], 1] = min(max_height,
+                    height_map[pix[0] + v[0], pix[1] + v[1], 1] = min(
+                        max_height,
                         height_map[pix[0] + v[0], pix[1] + v[1], 1])
                     jobs.append((height_map, water_map, (pix[0] + v[0], pix[1] + v[1]), max_height))
 
 
 def create_height_map(water_map, screen):
-    height_map = np.zeros(mapdimensions+(3,),dtype=np.uint8)
+    height_map = np.zeros(mapdimensions+(3,), dtype=np.uint8)
     for x in height_map:
         for y in x:
             y[1] = 255
@@ -78,10 +84,8 @@ def create_height_map(water_map, screen):
             height_map[pix[0], pix[1], 0] = height
             height_map[pix[0], pix[1], 1] = height
             if max_value-min_value > 10:
-                minProcess = Process(target=update_min_map, args=(height_map, water_map, pix, height))
-                minProcess.start()
+                update_min_map(height_map, water_map, pix, height)
                 update_max_map(height_map, water_map, pix, height)
-                minProcess.join()
             else:
                 update_min_map(height_map, water_map, pix, height)
                 update_max_map(height_map, water_map, pix, height)
@@ -94,7 +98,8 @@ def create_height_map(water_map, screen):
                 pygame.surfarray.blit_array(screen, height_map)
                 pygame.display.flip()
                 for event in pygame.event.get():
-                    if event.type == pygame.QUIT: sys.exit()
+                    if event.type == pygame.QUIT:
+                        sys.exit()
             update -= 1
             start_phase -= 1
     print("Zufälliges setzen der Pixel beendet. Jetzt systematisch.")
@@ -110,5 +115,6 @@ def create_height_map(water_map, screen):
         pygame.surfarray.blit_array(screen, height_map)
         pygame.display.flip()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
+            if event.type == pygame.QUIT:
+                sys.exit()
     return height_map

@@ -4,7 +4,8 @@
 import pygame
 import sys
 import numpy as np
-from random import randint, shuffle
+from random import randint, shuffle, random
+from math import exp
 from Config import mapdimensions, slope, slopediag, directions
 
 
@@ -74,7 +75,10 @@ def create_height_map(water_map, screen):
     for pix_no, pix in enumerate(all_points):
         min_value = height_map[pix[0], pix[1], 0]
         max_value = height_map[pix[0], pix[1], 1]
-        height = randint(min_value, max_value)
+        #height = randint(min_value, max_value)
+        height = min_value + int(round((max_value-min_value)/2.0))
+        #x = water_map[pix[0], pix[1], 2] * 3000.0 / slope / (mapdimensions[0] + mapdimensions[1])
+        #height = min_value + int(round(exp(-0.5 * x * x) * (max_value - min_value) * 0.99 + 0.01 * random()))
         height_map[pix[0], pix[1], 2] = height
         # update min- and maxmap
         height_map[pix[0], pix[1], 0] = height

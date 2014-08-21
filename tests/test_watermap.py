@@ -3,6 +3,7 @@
 from unittest import TestCase
 from mock import patch
 from Watermap import initialize_water_map, get_dir, get_min_flow_point, get_near_sink, create_river, create_water_map
+from Watermap import calculate_amount_for_pix, calculate_water_amounts
 
 
 def return1():
@@ -131,3 +132,45 @@ class WaterMapUtilityTest(TestCase):
             for y in range(len(water_map[0])):
                 for v in range(len(water_map[0][0])):
                     self.assertEqual(water_map[x][y][v], expected[x][y][v])
+
+    @patch('Watermap.mapdimensions', (3, 3))
+    def test_calculate_amount_for_pix(self):
+        water_map = initialize_water_map()
+        water_map[0, 0, 0] = 5 * 30
+        water_map[1, 0, 0] = 6 * 30
+        water_map[2, 0, 0] = 7 * 30
+        water_map[0, 1, 0] = 6 * 30
+        water_map[1, 1, 0] = 0 * 30
+        water_map[2, 1, 0] = 6 * 30
+        water_map[0, 2, 0] = 0 * 30
+        water_map[1, 2, 0] = 6 * 30
+        water_map[2, 2, 0] = 5 * 30
+        calculate_amount_for_pix(water_map, (1, 1))
+        self.assertEqual(water_map[0, 0, 2], 1)
+        self.assertEqual(water_map[1, 0, 2], 1)
+        self.assertEqual(water_map[2, 0, 2], 1)
+        self.assertEqual(water_map[1, 1, 2], 4)
+        self.assertEqual(water_map[2, 2, 2], 0)
+
+    @patch('Watermap.mapdimensions', (3, 3))
+    def test_calculate_water_amounts(self):
+        water_map = initialize_water_map()
+        water_map[0, 0, 0] = 5 * 30
+        water_map[1, 0, 0] = 6 * 30
+        water_map[2, 0, 0] = 7 * 30
+        water_map[0, 1, 0] = 6 * 30
+        water_map[1, 1, 0] = 0 * 30
+        water_map[2, 1, 0] = 6 * 30
+        water_map[0, 2, 0] = 0 * 30
+        water_map[1, 2, 0] = 6 * 30
+        water_map[2, 2, 0] = 5 * 30
+        calculate_water_amounts(water_map)
+        self.assertEqual(water_map[0, 0, 2], 1)
+        self.assertEqual(water_map[1, 0, 2], 1)
+        self.assertEqual(water_map[2, 0, 2], 1)
+        self.assertEqual(water_map[0, 1, 2], 5)
+        self.assertEqual(water_map[1, 1, 2], 4)
+        self.assertEqual(water_map[2, 1, 2], 1)
+        self.assertEqual(water_map[0, 2, 2], 6)
+        self.assertEqual(water_map[1, 2, 2], 1)
+        self.assertEqual(water_map[2, 2, 2], 2)

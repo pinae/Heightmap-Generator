@@ -6,7 +6,7 @@ import pygame
 import numpy as np
 from random import random, shuffle
 
-from Config import mapdimensions
+from Config import mapdimensions, directions, slope
 
 
 def get_dir(start, end):
@@ -106,6 +106,7 @@ def initialize_water_map():
     for x in water_map:
         for y in x:
             y[0] = 255
+            y[1] = 0
             y[2] = 0  # randint(0, 7) * 30
     return water_map
 
@@ -131,3 +132,49 @@ def create_water_map(screen, flow_point_tuples):
                 if event.type == pygame.QUIT:
                     sys.exit()
     return water_map
+
+
+def calculate_amount_for_pix(water_map, pix):
+    if water_map[pix[0], pix[1], 2] > 0:
+        return water_map[pix[0], pix[1], 2]
+    water_amount = 1
+    water_map[pix[0], pix[1], 1] = 1
+    for dir_no in directions.keys():
+        if 0 <= pix[0] + directions[(dir_no + 4) % 8][0] < mapdimensions[0] and \
+           0 <= pix[1] + directions[(dir_no + 4) % 8][1] < mapdimensions[1] and \
+           water_map[
+               pix[0] + directions[(dir_no + 4) % 8][0],
+               pix[1] + directions[(dir_no + 4) % 8][1],
+               0
+           ] / 30 == dir_no:
+            if water_map[
+                pix[0] + directions[(dir_no + 4) % 8][0],
+                pix[1] + directions[(dir_no + 4) % 8][1],
+                2
+            ] <= 0 and water_map[
+                pix[0] + directions[(dir_no + 4) % 8][0],
+                pix[1] + directions[(dir_no + 4) % 8][1],
+                1
+            ] == 1:
+                print("Circle detected!")
+                water_amount = int(round(pow(water_amount + 30, 0.6) * slope / 3.0 - 51.3))
+                if water_amount > 255:
+                    water_amount = 255
+                water_map[pix[0], pix[1], 2] = water_amount
+                return water_amount
+            water_amount += calculate_amount_for_pix(
+                water_map,
+                (pix[0] + directions[(dir_no + 4) % 8][0], pix[1] + directions[(dir_no + 4) % 8][1])
+            )
+    water_amount = int(round(pow(water_amount + 30, 0.6) * slope / 3.0 - 51.3))
+    if water_amount > 255:
+        water_amount = 255
+    water_map[pix[0], pix[1], 2] = water_amount
+    return water_amount
+
+
+def calculate_water_amounts(water_map):
+    for y in range(len(water_map)):
+        for x in range(len(water_map[0])):
+            if water_map[x, y, 2] <= 0:
+                calculate_amount_for_pix(water_map, (x, y))

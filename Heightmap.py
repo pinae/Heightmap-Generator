@@ -76,7 +76,8 @@ def create_height_map(water_map, screen):
         min_value = height_map[pix[0], pix[1], 0]
         max_value = height_map[pix[0], pix[1], 1]
         #height = randint(min_value, max_value)
-        height = min_value + int(round((max_value-min_value)/2.0))
+        #height = min_value + int(round((max_value-min_value)/2.0))
+        height = min_value + int(round((max_value-min_value)/2.0+(max_value-min_value)*0.2*(random()-0.5)))
         #x = water_map[pix[0], pix[1], 2] * 3000.0 / slope / (mapdimensions[0] + mapdimensions[1])
         #height = min_value + int(round(exp(-0.5 * x * x) * (max_value - min_value) * 0.99 + 0.01 * random()))
         height_map[pix[0], pix[1], 2] = height

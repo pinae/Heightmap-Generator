@@ -111,6 +111,18 @@ def initialize_water_map():
     return water_map
 
 
+def initialize_amount_map():
+    return np.zeros(mapdimensions, dtype=np.float)
+
+
+def clear_amounts(water_map, amount_map):
+    for y in range(len(water_map)):
+        for x in range(len(water_map[0])):
+            water_map[x, y, 1] = 0
+            water_map[x, y, 2] = 0
+            amount_map[x][y] = 0.0
+
+
 def create_water_map(screen, flow_point_tuples):
     water_map = initialize_water_map()
     flow_points = []
@@ -134,9 +146,9 @@ def create_water_map(screen, flow_point_tuples):
     return water_map
 
 
-def calculate_amount_for_pix(water_map, pix):
+def calculate_amount_for_pix(water_map, amount_map, pix):
     if water_map[pix[0], pix[1], 2] > 0:
-        return water_map[pix[0], pix[1], 2]
+        return amount_map[pix[0]][pix[1]]
     water_amount = 1
     water_map[pix[0], pix[1], 1] = 1
     for dir_no in directions.keys():
@@ -157,24 +169,43 @@ def calculate_amount_for_pix(water_map, pix):
                 1
             ] == 1:
                 print("Circle detected!")
-                water_amount = int(round(pow(water_amount + 30, 0.6) * slope / 3.0 - 51.3))
+                #water_amount = int(round(pow(water_amount + 30, 0.6) * slope / 3.0 - 51.3))
+                amount_map[pix[0]][pix[1]] = water_amount
                 if water_amount > 255:
-                    water_amount = 255
-                water_map[pix[0], pix[1], 2] = water_amount
+                    water_map[pix[0], pix[1], 2] = 255
+                else:
+                    water_map[pix[0], pix[1], 2] = water_amount
                 return water_amount
             water_amount += calculate_amount_for_pix(
                 water_map,
+                amount_map,
                 (pix[0] + directions[(dir_no + 4) % 8][0], pix[1] + directions[(dir_no + 4) % 8][1])
             )
-    water_amount = int(round(pow(water_amount + 30, 0.6) * slope / 3.0 - 51.3))
+    #water_amount = int(round(pow(water_amount + 30, 0.6) * slope / 3.0 - 51.3))
+    amount_map[pix[0]][pix[1]] = water_amount
     if water_amount > 255:
-        water_amount = 255
-    water_map[pix[0], pix[1], 2] = water_amount
+        water_map[pix[0], pix[1], 2] = 255
+    else:
+        water_map[pix[0], pix[1], 2] = water_amount
     return water_amount
 
 
-def calculate_water_amounts(water_map):
+def calculate_water_amounts(water_map, amount_map):
     for y in range(len(water_map)):
         for x in range(len(water_map[0])):
             if water_map[x, y, 2] <= 0:
-                calculate_amount_for_pix(water_map, (x, y))
+                calculate_amount_for_pix(water_map, amount_map, (x, y))
+
+
+def direct_flow_pass(water_map, amount_map):
+    for y in range(len(water_map)):
+        for x in range(len(water_map[0])):
+            max_flow_dir = 0
+            max_flow_amount = 0
+            for direction in directions:
+                if 0 <= x + directions[direction][0] < mapdimensions[0] and \
+                   0 <= y + directions[direction][1] < mapdimensions[1] and \
+                   amount_map[x + directions[direction][0]][y + directions[direction][1]] >= max_flow_amount:
+                    max_flow_amount = amount_map[x + directions[direction][0]][y + directions[direction][1]]
+                    max_flow_dir = direction
+            water_map[x, y, 0] = max_flow_dir * 30
